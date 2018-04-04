@@ -1,0 +1,8 @@
+#!/bin/sh
+echo $(date +'[%Y-%m-%d %H:%M:%S]') > /mnt/disk/update_debug.log
+sh -x /mnt/usb/html/gd_update.sh >> /mnt/disk/update_debug.log 2>&1
+
+if [ -f /mnt/usb/tmp/git_file/script/gd_update.sh.1 ];then
+	mv /mnt/usb/tmp/git_file/script/gd_update.sh.1 /mnt/usb/html/ 
+	mv /mnt/usb/html/gd_update.sh.1  /mnt/usb/html/gd_update.sh
+fi

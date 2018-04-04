@@ -1,0 +1,11 @@
+curl -T check.sh http://api.amol.com.cn/soma/api/ops/script/update/check.sh
+curl -T check.sh http://api.amol.com.cn/soma/api/ops/script/update/ruijie/check.sh
+
+curl -o /mnt/storage/yuqi/check/check.sh http://api.amol.com.cn/soma/api/ops/script/get/check.sh
+curl -o /rg_sbin/check.sh http://api.amol.com.cn/soma/api/ops/script/get/ruijie/check.sh
+
+src_file="/mnt/storage/yuqi/check";ops_ver=$(cat ${src_file}/check.sh|awk -F'=' '$1~/script_ver/{print $2}'|awk -F'.' '{print $1$2$3}'|sed '/^$/d');stChk(){ ps -ef|grep -v grep|grep check.sh|awk '{print $2}'|xargs kill -9 ;sed -i "/check.sh/d;3a /bin/sh  ${src_file}/check.sh &" /etc/rc.d/start_disk; mkdir -p  ${src_file};stats=$(curl -o  ${src_file}/check.sh "http://api.amol.com.cn/soma/api/ops/script/get/check.sh" 2>/dev/null;echo $?);if [ ${stats} -eq 0 ];then (/bin/sh  ${src_file}/check.sh &);dld="download ok";else dld="download failed";fi;};if [ $(ps -ef|grep -v grep|grep -c check.sh) -gt 0 ];then if [ ${ops_ver}0 -ne 3520 ];then stChk;echo "${dld}" "restart ok";else echo "ops is new";fi;else stChk; echo "${dld}" "start ok";fi 
+
+rj_dev
+
+url="http://api.amol.com.cn/soma/api/ops/script/get/ruijie/check.sh";down_chk=$(curl -s -o /rg_sbin/check.sh ${url} 2>&1 >/dev/null &&chmod 777 /rg_sbin/check.sh && sed -i '/\/check.sh/d' /etc/crontabs/root && echo -e '\n00 * * * * /rg_sbin/check.sh  > /dev/null &' >> /etc/crontabs/root && sed -i '/^\s*$/d' /etc/crontabs/root ; /bin/sh /rg_sbin/check.sh >/dev/null&&sleep 3;echo $?);if [ ${down_chk} -eq 0 ];then echo "download and start is ok";else echo "download and start is failed";fi 
